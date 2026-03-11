@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+             background-image: url("{{ url_for('static', filename='img/bg.jpg') }}");
+            color: #333;
+            padding: 20px;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+	        background-position: center;
+        }
+
+        header {
+            background-color: #6a1b9a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logout-link {
+            position: absolute;
+            right: 30px;
+            top: 20px;
+            background-color: #d32f2f;
+            color: white;
+            padding: 8px 14px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .logout-link:hover {
+            background-color: #b71c1c;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4a148c;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            width: 250px;
+            font-size: 16px;
+        }
+
+        .material-card {
+            background-color: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+        }
+
+        .material-card h3 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+
+        .material-card p {
+            line-height: 1.6;
+        }
+
+        .material-card a {
+            display: inline-block;
+            background-color: #0288d1;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .material-card a:hover {
+            background-color: #0277bd;
+        }
+
+        video, iframe {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .no-materials {
+            text-align: center;
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        hr {
+            border: none;
+            height: 2px;
+            background: #ccc;
+            margin: 30px 0;
+        }
+    </style>
+    <style>
+	#myFixedButton {
+    position: fixed; /* Makes the button fixed relative to the viewport */
+    bottom: 20px;    /* Positions the button 20px from the bottom of the viewport */
+    right: 20px;     /* Positions the button 20px from the right of the viewport */
+    z-index: 1000;   /* Ensures the button stays on top of other content */
+    padding: 15px 25px; /* Adds some padding for better appearance */
+    background-color: #007bff; /* Example background color */
+    color: white;    /* Example text color */
+    border: none;    /* Removes default button border */
+    border-radius: 5px; /* Adds rounded corners */
+    cursor: pointer; /* Changes cursor to pointer on hover */
+    font-size: 16px; /* Sets font size */
+}
+
+#myFixedButton:hover {
+    background-color: #0056b3; /* Darker background on hover */
+}
+	</style>
+
+</head>
+<body>
+
+    <header>
+        <h1>Student Panel - Welcome {{ user_name }}!</h1>
+		
+        <a class="logout-link" href="{{ url_for('logout') }}">Logout</a>
+    </header>
+<div style="margin: 20px;">
+    <a href="{{ url_for('chatbot') }}">
+        <button  style="padding:10px 20px; margin-right:10px;">Chatbot</button>
+    </a>
+    <a href="{{ url_for('quiz') }}">
+        <button style="padding:10px 20px;">Quiz</button>
+    </a>
+    <a href="{{ url_for('feedback') }}">
+        <button style="padding:10px 20px;">Feedback</button>
+    </a>
+<a href="{{ url_for('view_roadmap') }}">
+    <button style="padding:10px 20px;">Roadmap</button>
+</a>
+
+
+</div>
+    <h2>Browse Learning Materials</h2>
+
+    <form action="{{ url_for('student_dashboard') }}" method="get">
+        <label for="course_id"><strong>Select Subject/Course:</strong></label><br><br>
+        <select name="course_id" >
+            <option value="">-- Select a Course --</option>
+            {% for course in courses %}
+                <option value="{{ course.id }}" {% if course.id|string == selected_course_id %}selected{% endif %}>{{ course.name }}</option>
+            {% endfor %}
+        </select>
+		<select id="std_class" name="std_class" required>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+</select>
+<input name="" type="submit">
+    </form>
+
+    {% if materials %}
+        {% for material in materials %}
+            <div class="material-card">
+                <h3>{{ material.title }}</h3>
+                <p><strong>Description:</strong> {{ material.description }}</p>
+                <p><strong>Uploaded by:</strong> {{ material.faculty_name }}</p>
+                <p><strong>Course:</strong> {{ material.course_name }}</p>
+
+                {% if material.video_path %}
+<video width="560" height="315" controls>
+  <source src="{{ url_for('uploaded_file', filename=material.video_path.replace('\\', '/').split('/')[-1]) }}" type="video/mp4">
+
+    Your browser does not support the video tag.
+</video>
+{% endif %}
+
+
+                {% if material.youtube_link %}
+                    <iframe src="{{ material.youtube_link }}" frameborder="0" allowfullscreen></iframe>
+                {% endif %}
+
+                {% if material.pdf_path %}
+    <p><strong>PDF Notes:</strong></p>
+    {% for pdf in material.pdf_path.split(',') %}
+        <a href="{{ url_for('uploaded_file', filename=pdf.split('/')[-1]) }}" target="_blank">
+            📘 View PDF {{ loop.index }}
+        </a><br>
+    {% endfor %}
+{% else %}
+    <p><em>No PDF notes uploaded.</em></p>
+{% endif %}
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-materials">No materials available for this course yet.</p>
+    {% endif %}
+	
+	
+	
+	<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const courseSelect = document.querySelector("select[name='course_id']");
+    const classSelect = document.querySelector("select[name='std_class']");
+
+    // Load saved selections from localStorage
+    const savedCourse = localStorage.getItem("selected_course_id");
+    const savedClass = localStorage.getItem("selected_std_class");
+
+    if (savedCourse) {
+        courseSelect.value = savedCourse;
+    }
+    if (savedClass) {
+        classSelect.value = savedClass;
+    }
+
+    // Save selections on form submit
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function() {
+        localStorage.setItem("selected_course_id", courseSelect.value);
+        localStorage.setItem("selected_std_class", classSelect.value);
+    });
+});
+</script>
+
+	
+	
+	
+	
+	
+
+<script>
+    // Prevent back navigation
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+</script>
+</body>
+</html>

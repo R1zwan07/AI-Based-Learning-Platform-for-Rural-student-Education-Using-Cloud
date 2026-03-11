@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Roadmap</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f8f9fa, #e3f2fd);
+      text-align: center;
+      padding: 30px;
+    }
+    form {
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 70%;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    .msg { color: green; }
+  </style>
+</head>
+<body>
+<a class="back-link" href="{{ url_for('faculty_dashboard') }}">← Back to Dashboard</a>
+
+  <h2>📤 Upload Class Roadmap</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <p class="msg">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" enctype="multipart/form-data">
+    <label>Class:</label>
+    <input type="text" name="std_class" required><br><br>
+    <label>Choose PDF:</label>
+    <input type="file" name="pdf_file" accept="application/pdf" required><br><br>
+    <button type="submit">Upload</button>
+  </form>
+
+  <h3>📚 Uploaded Roadmaps</h3>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Class</th>
+      <th>File Name</th>
+      <th>Action</th>
+    </tr>
+    {% for r in roadmaps %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.std_class }}</td>
+      <td><a href="{{ url_for('serve_pdf', filename=r.pdf_name) }}" target="_blank">{{ r.pdf_name }}</a>
+</td>
+      <td><a href="{{ url_for('delete_roadmap', roadmap_id=r.id) }}" onclick="return confirm('Delete this roadmap?')">Delete</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+
+</body>
+</html>

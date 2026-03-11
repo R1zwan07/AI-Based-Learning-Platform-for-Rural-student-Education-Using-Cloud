@@ -1,0 +1,16 @@
+id,subject,question,option1,option2,option3,answer
+1,Math,What is 5 + 3?,6,8,9,8
+2,Math,The square root of 49 is?,6,7,8,7
+3,Math,What is 12 divided by 3?,2,3,4,4
+4,Math,What is 15% of 200?,25,30,35,30
+5,Math,What is the value of π (pi) approximately?,3.12,3.14,3.16,3.14
+6,Science,Which planet is known as the Red Planet?,Earth,Venus,Mars,Mars
+7,Science,What is H2O commonly known as?,Hydrogen,Water,Oxygen,Water
+8,Science,Which gas do plants absorb during photosynthesis?,Oxygen,Carbon Dioxide,Nitrogen,Carbon Dioxide
+9,Science,What part of the plant conducts photosynthesis?,Stem,Leaf,Root,Leaf
+10,Science,What force pulls objects toward the Earth?,Friction,Gravity,Magnetism,Gravity
+11,Social,Who was the first President of India?,Mahatma Gandhi,Dr. Rajendra Prasad,Jawaharlal Nehru,Dr. Rajendra Prasad
+12,Social,In which year did India get independence?,1945,1947,1950,1947
+13,Social,Which is the capital of France?,London,Paris,Rome,Paris
+14,Social,The Great Wall of China was built to protect from?,Earthquakes,Invasions,Floods,Invasions
+15,Social,Which ocean is the largest?,Atlantic,Indian,Pacific,Pacific

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Faculty Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #f8f9fa, #e3f2fd);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        form {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            max-width: 1100px;
+            background-color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        hr {
+            border: 1px solid #ccc;
+            margin: 40px 0;
+        }
+
+        .action-buttons form {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .logout-link {
+            float: right;
+            margin-top: -40px;
+            margin-right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .logout-link:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Faculty Panel - Welcome, {{ user_name }}!</h1>
+        <a class="logout-link" href="{{ url_for('logout') }}">Logout</a>
+    </header>
+	
+	<div style="text-align:center; margin: 20px;">
+   <a href="{{ url_for('upload_roadmap') }}">📘 Manage Roadmaps</a>
+
+
+</div>
+
+    <h2>Upload Learning Materials</h2>
+    <form action="{{ url_for('upload_material') }}" method="post" enctype="multipart/form-data">
+        <label for="title">Material Title:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="course_id">Select Subject/Course:</label>
+        <select id="course_id" name="course_id" required>
+            {% for course in courses %}
+            <option value="{{ course.id }}">{{ course.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="video_file">Upload Video (Optional):</label>
+        <input type="file" id="video_file" name="video_file" accept="video/*">
+
+        <label for="youtube_link">YouTube Link (Optional):</label>
+        <input type="text" id="youtube_link" name="youtube_link">
+
+        <label for="pdf_files">Upload PDF Notes (Optional):</label>
+        <input type="file" id="pdf_files" name="pdf_files" accept=".pdf" multiple>
+		
+		<label for="std_class">Select class:</label>
+        
+		<select id="std_class" name="std_class" required>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+</select>
+
+        <button type="submit">Upload Material</button>
+		
+    </form>
+
+    <hr>
+
+    <h2>My Uploaded Materials</h2>
+    {% if materials %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Course</th>
+                    <th>Video</th>
+                    <th>YouTube</th>
+                    <th>PDF</th>
+					<th>Class</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materials %}
+                <tr>
+                    <td>{{ material.title }}</td>
+                    <td>{{ material.description }}</td>
+                    <td>{{ material.course_name }}</td>
+                    <td>{% if material.video_path %}<a href="{{ url_for('download_file', filename=material.video_path.split('/')[-1]) }}" target="_blank">Download Video</a>{% else %}None{% endif %}</td>
+                    <td>{% if material.youtube_link %}<a href="{{ material.youtube_link }}" target="_blank">Watch</a>{% else %}None{% endif %}</td>
+                    <td>
+    {% if material.pdf_path %}
+        {% for pdf in material.pdf_path.split(',') %}
+            <a href="{{ url_for('download_file', filename=pdf.split('/')[-1]) }}">PDF {{ loop.index }}</a><br>
+        {% endfor %}
+    {% else %}
+        None
+    {% endif %}
+</td>
+
+					 <td>{{ material.std_class }}</td>
+                    <td class="action-buttons">
+                        <form action="{{ url_for('update_material', material_id=material.id) }}" method="post" enctype="multipart/form-data">
+                            <input type="text" name="new_title" value="{{ material.title }}" required><br>
+                            <textarea name="new_description" required>{{ material.description }}</textarea><br>
+                             <input type="file" name="update_video_file" accept=".mp4,video/mp4"><br>
+                            <input type="text" name="update_youtube_link" value="{{ material.youtube_link or '' }}"><br>
+                            
+							<input type="file" name="update_pdf_file" accept=".pdf,application/pdf" multiple><br>
+                            <button type="submit">Update</button>
+                        </form>
+                        <form action="{{ url_for('delete_material', material_id=material.id) }}" method="post">
+                            <button type="submit" onClick="return confirm('Are you sure?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="text-align:center;">You haven't uploaded any materials yet.</p>
+    {% endif %}
+
+
+<script>
+    // Prevent back navigation
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+</script>
+</body>
+</html>

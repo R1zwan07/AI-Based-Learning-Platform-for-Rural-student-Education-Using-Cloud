@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Roadmap</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      text-align: center;
+      padding: 30px;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    table {
+      margin: auto;
+      border-collapse: collapse;
+      width: 60%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th { background: #007bff; color: white; }
+  </style>
+</head>
+<body>
+
+  <h2>📘 View Class Roadmap</h2>
+
+  <form method="POST">
+    <label>Select Class:</label>
+    <input type="text" name="std_class" required>
+    <button type="submit">View</button>
+  </form>
+
+  {% if roadmaps %}
+  <h3>Results for class: {{ selected_class }}</h3>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>PDF File</th>
+    </tr>
+    {% for r in roadmaps %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td><a href="{{ url_for('serve_pdf', filename=r.pdf_name) }}" target="_blank">{{ r.pdf_name }}</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+
+</body>
+</html>

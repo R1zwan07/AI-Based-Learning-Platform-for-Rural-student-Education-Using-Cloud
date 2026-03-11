@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Quiz</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-image: url("{{ url_for('static', filename='img/bg.jpg') }}");
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+	        background-position: center;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        h1, h2 {
+            color: #4a148c;
+            text-align: center;
+        }
+
+        .logout-link {
+            position: absolute;
+            right: 30px;
+            top: 20px;
+            background-color: #d32f2f;
+            color: white;
+            padding: 8px 14px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .logout-link:hover {
+            background-color: #b71c1c;
+        }
+
+        .subject-select {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        select, button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select {
+            width: 250px;
+            background-color: #fff;
+        }
+
+        select:focus {
+            border-color: #6a1b9a;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(106, 27, 154, 0.2);
+        }
+
+        .quiz-questions {
+            margin-top: 20px;
+        }
+
+        .question-card {
+            background-color: #e8f5e9;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #2e7d32;
+        }
+
+        .question-card p {
+            font-weight: bold;
+            color: #1b5e20;
+            margin-bottom: 10px;
+        }
+
+        .option-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option-container label {
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .option-container label:hover {
+            background-color: #c8e6c9;
+        }
+
+        button {
+            background-color: #0288d1;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #0277bd;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #6a1b9a;
+        }
+    </style>
+</head>
+<body>
+<a class="back-link" href="{{ url_for('student_dashboard') }}">← Back to Dashboard</a>
+
+    <div class="quiz-container">
+        <h1>Dynamic Quiz</h1>
+        <div class="subject-select">
+            <label for="subject">Select a subject:</label>
+            <select id="subject">
+                <option value="">-- Choose Subject --</option>
+                <option value="maths">Maths</option>
+                <option value="science">Science</option>
+                <option value="social">Social</option>
+            </select>
+        </div>
+
+        <div id="quiz-questions" class="quiz-questions">
+            <!-- Questions will be rendered here by JavaScript -->
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+
+<a class="back-link" href="{{ url_for('student_dashboard') }}">← Back to Dashboard</a>
+
+    <script>
+        document.getElementById('subject').addEventListener('change', function() {
+            const subject = this.value;
+            const quizQuestionsContainer = document.getElementById('quiz-questions');
+            const resultContainer = document.getElementById('result');
+
+            // Clear previous quiz and result
+            quizQuestionsContainer.innerHTML = '';
+            resultContainer.innerHTML = '';
+
+            if (subject) {
+                // Show a loading message while fetching
+                quizQuestionsContainer.innerHTML = '<p style="text-align: center;">Loading questions...</p>';
+
+                // Fetch questions from the Flask server
+                fetch(`/quiz/questions?subject=${subject}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.length === 0) {
+                            quizQuestionsContainer.innerHTML = '<p style="text-align: center; color: red;">No questions found for this subject. Please choose another.</p>';
+                            return;
+                        }
+
+                        // Dynamically create the quiz form
+                        const form = document.createElement('form');
+                        form.id = 'quiz-form';
+
+                        data.forEach((q, index) => {
+                            const questionCard = document.createElement('div');
+                            questionCard.className = 'question-card';
+
+                            const questionText = document.createElement('p');
+                            questionText.textContent = `${index + 1}. ${q.question}`;
+                            questionCard.appendChild(questionText);
+
+                            const optionsContainer = document.createElement('div');
+                            optionsContainer.className = 'option-container';
+
+                            q.options.forEach(option => {
+                                const optionLabel = document.createElement('label');
+                                const optionInput = document.createElement('input');
+                                optionInput.type = 'radio';
+                                optionInput.name = `q${index + 1}`;
+                                optionInput.value = option;
+                                optionLabel.appendChild(optionInput);
+                                optionLabel.appendChild(document.createTextNode(` ${option}`));
+                                optionsContainer.appendChild(optionLabel);
+                            });
+
+                            questionCard.appendChild(optionsContainer);
+                            form.appendChild(questionCard);
+                        });
+
+                        // Add a submit button
+                        const submitButton = document.createElement('button');
+                        submitButton.type = 'submit';
+                        submitButton.textContent = 'Submit Answers';
+                        form.appendChild(submitButton);
+
+                        // Clear the loading message and append the form
+                        quizQuestionsContainer.innerHTML = '';
+                        quizQuestionsContainer.appendChild(form);
+
+                        // Attach submit event listener to the form
+                        form.addEventListener('submit', function(event) {
+                            event.preventDefault();
+                            checkAnswers(data, resultContainer);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching quiz data:', error);
+                        quizQuestionsContainer.innerHTML = '<p style="text-align: center; color: red;">Failed to load quiz questions. Please try again.</p>';
+                    });
+            }
+        });
+
+        function checkAnswers(questions, resultContainer) {
+            let score = 0;
+            const form = document.getElementById('quiz-form');
+
+            questions.forEach((q, index) => {
+                const questionName = `q${index + 1}`;
+                const selectedOption = form.querySelector(`input[name="${questionName}"]:checked`);
+                if (selectedOption && selectedOption.value === q.answer) {
+                    score++;
+                }
+            });
+
+            resultContainer.innerHTML = `<h3>Your Score: ${score} out of ${questions.length}</h3>`;
+        }
+    </script>
+</body>
+</html>

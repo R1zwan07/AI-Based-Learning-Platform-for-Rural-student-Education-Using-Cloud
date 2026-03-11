@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View PDF Text - {{ pdf_name }}</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f9f9f9; padding: 20px; }
+    pre { white-space: pre-wrap; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <h2>Text extracted from {{ pdf_name }}</h2>
+  <pre>{{ text }}</pre>
+</body>
+</html>

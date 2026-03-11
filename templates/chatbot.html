@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <style>
+      .textbox{
+      height:30px;
+      width:480px;
+      font-size:14px;
+
+      }
+
+      .btn{
+      height:40px;
+      width:180px;
+      font-size:14px;
+      }
+        body {
+
+
+             margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+             background-image: url("{{ url_for('static', filename='img/bg.jpg') }}");
+            color: #333;
+            padding: 20px;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+	        background-position: center;
+        }
+
+        header {
+            background-color: #6a1b9a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logout-link {
+            position: absolute;
+            right: 30px;
+            top: 20px;
+            background-color: #d32f2f;
+            color: white;
+            padding: 8px 14px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .logout-link:hover {
+            background-color: #b71c1c;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4a148c;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            width: 250px;
+            font-size: 16px;
+        }
+
+        .material-card {
+            background-color: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+        }
+
+        .material-card h3 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+
+        .material-card p {
+            line-height: 1.6;
+        }
+
+        .material-card a {
+            display: inline-block;
+            background-color: #0288d1;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .material-card a:hover {
+            background-color: #0277bd;
+        }
+
+        video, iframe {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .no-materials {
+            text-align: center;
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        hr {
+            border: none;
+            height: 2px;
+            background: #ccc;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Student Panel - Welcome, {{ user_name }}!</h1>
+    </header>
+
+    <div align="left" style="margin: 20px;">
+    <a href="{{ url_for('chatbot') }}">
+        <button  style="padding:10px 20px; margin-right:10px;">Chatbot</button>
+    </a>
+    <a href="{{ url_for('quiz') }}">
+        <button style="padding:10px 20px;">Quiz</button>
+    </a>
+    <a href="{{ url_for('feedback') }}">
+        <button style="padding:10px 20px;">Feedback</button>
+    </a>
+<a href="{{ url_for('view_roadmap') }}">
+    <button style="padding:10px 20px;">Roadmap</button>
+</a>
+
+
+</div>
+     <h2>Welcome, {{ user_name }}</h2>
+    <h3>Chatbot Page</h3>
+<a class="back-link" href="{{ url_for('student_dashboard') }}">← Back to Dashboard</a>
+
+    <form method="POST">
+        <div>
+            <label for="language">Select Language:</label>
+            <select name="language" id="language" class="btn">
+                <option value="English">English</option>
+                <option value="Kannada">Kannada</option>
+
+            </select>
+        </div>
+        <br>
+        <input class="textbox" name="message" type="text" size="70" placeholder="Type a message..." required>
+        <button class="btn" type="submit">Send</button>
+    </form>
+
+
+    <div style="background-color:#FFFFFF;">
+    {% if bot_reply %}
+        <p><b>Bot:</b> {{ bot_reply }}</p>
+    {% endif %}
+        </div>
+</body>
+</html>

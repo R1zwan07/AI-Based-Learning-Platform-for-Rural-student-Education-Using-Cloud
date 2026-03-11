@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Class Roadmap</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-image: url("{{ url_for('static', filename='img/bg.jpg') }}");
+            color: #333;
+            text-align: center;
+            padding: 30px;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+	        background-position: center;
+        }
+
+        header {
+            background-color:  #6a1b9a;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            font-size: 16px;
+            width: 200px;
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: #388e3c;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2e7d32;
+        }
+
+        .pdf-container {
+            margin-top: 30px;
+        }
+
+        iframe {
+            width: 80%;
+            height: 600px;
+            border: 2px solid #0288d1;
+            border-radius: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Learning Roadmap</h1>
+</header>
+
+<form action="{{ url_for('roadmap') }}" method="post">
+    <label for="std_class"><strong>Select Class:</strong></label><br><br>
+    <select name="std_class" id="std_class" required>
+        <option value="">-- Select Class --</option>
+        <option value="8" {% if selected_class == "8" %}selected{% endif %}>Class 8</option>
+        <option value="9" {% if selected_class == "9" %}selected{% endif %}>Class 9</option>
+        <option value="10" {% if selected_class == "10" %}selected{% endif %}>Class 10</option>
+    </select>
+    <button type="submit">Show Roadmap</button>
+</form>
+
+{% if pdf_file %}
+<div class="pdf-container">
+    <iframe src="{{ url_for('uploaded_file', filename=pdf_file) }}" allowfullscreen></iframe>
+</div>
+{% endif %}
+
+<a class="back-link" href="{{ url_for('student_dashboard') }}">← Back to Dashboard</a>
+
+</body>
+</html>
